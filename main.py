@@ -309,6 +309,7 @@ class AutoSNVPhyl(object):
 
     def extract_files(self):
         from sequence_getter import SequenceGetter
+        from sequence_getter import ExtractionError
 
         extractor = SequenceGetter(nasmnt=self.NASMNT, output=False)
         if self.inputs is None:
@@ -335,14 +336,23 @@ class AutoSNVPhyl(object):
 
         # Get paths of fastq's
         path_list = []
+        err = ""
         for seqid in ids:
-            for i in [1, 2]:
-                path_list.append(extractor.retrieve_file(seqid.rstrip("\n"), filetype="fastq_R" + str(i),
-                                                         getpathonly=True))
+            for i in [1, 2]:# TODO missing file
+                try:
+                    path_list.append(extractor.retrieve_file(seqid.rstrip("\n"), filetype="fastq_R" + str(i),
+                                                             getpathonly=True))
+                except ExtractionError as e:
+                    err += e.message + '\n'
 
         if self.reference is not None:
             # Get fasta
-            refpath = extractor.retrieve_file(self.reference, "fasta", getpathonly=True)
+            try:
+                refpath = extractor.retrieve_file(self.reference, "fasta", getpathonly=True)
+            except ExtractionError as e:
+                err += e.message + '\n'
+            if len(err) > 0:
+                raise AutoSNVPhylError(err)
             path_list.append(refpath)
             self.uploaded.append(os.path.split(refpath)[-1])
             self.logsequences.append(self.reference)

@@ -233,6 +233,8 @@ class Run(object):
             response = "Running SNVPhyl with reference %s\n\nComparing to:" % inputs['reference']
             for fastq in list(inputs['fastqs']):
                 response += '\n' + fastq
+            if inputs['reference'] not in inputs['fastqs']:
+                response += "Did you mean to not compare the reference to itself?"  # TODO ask for answer
         except ValueError as e:
             response = "Sorry, there was a problem with your SNVPhyl request:\n%s\n" \
                        "Please submit a new request and close this one." % e.args[0]
