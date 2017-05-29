@@ -338,7 +338,7 @@ class AutoSNVPhyl(object):
         path_list = []
         err = ""
         for seqid in ids:
-            for i in [1, 2]:# TODO missing file
+            for i in [1, 2]:
                 try:
                     path_list.append(extractor.retrieve_file(seqid.rstrip("\n"), filetype="fastq_R" + str(i),
                                                              getpathonly=True))
@@ -481,6 +481,7 @@ class AutoSNVPhyl(object):
         while True:
             try:
                 self.gi.histories.create_dataset_collection(self.history_id, collection_description)
+                break
             except (ConnectionError, requests.exceptions.ConnectionError):
                 self.wait_for_problem()
 
